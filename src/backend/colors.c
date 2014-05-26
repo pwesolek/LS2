@@ -20,17 +20,8 @@
 
  */
 
-extern double ls2_backend_steps;
 
-static inline double ls2_gradation(double value)
-{
-	if (ls2_backend_steps > 0.0) {
-	    double t = round(value * ls2_backend_steps) / ls2_backend_steps;
-	    return t;
-        } else {
-	    return value;
-        }
-}
+
 
 
 /*!
@@ -41,22 +32,16 @@ __attribute__((__nonnull__,__gnu_inline__,__always_inline__,__const__))
 ls2_pick_color_locbased(const float sample, double *r, double *g,
 			double *b, double __attribute__((__unused__)) *a)
 {
-    const float good_color = 50.0F;
-    const float bad_color = 250.0F;
+	const double shift=500.0;
+    //printf("%f ",sample);
     if (isnan(sample)) {
-        // Mark not-a-number in magenta.
-        *r = 1.0; *g = 0.0; *b = 1.0;
-    } else if (sample < good_color) {
-        // Use a very good color.
-        const double t = ls2_gradation(sample / 50.0);
-        *r = t; *g = 1.0; *b = t;
-    } else if (sample < bad_color) {
-        // Use a good color.
-        const double t = ls2_gradation(1.0 - (sample - good_color) / (bad_color - good_color));
-        *r = t; *g = t; *b = t;
+        // Mark not-a-number in black.
+        *r = 0.0; *g = 0.0; *b = 0.0;
+    } else if (sample < shift) {
+		double t = sample/(255.0);
+        *r = 1.0-t; *g = 1.0-t; *b = 1.0-t; 
     } else {
-        // Error too large
-        *r = 0.0; *g = 0.0; *b = 1.0;
+        *r = 0.0; *g = 0.0; *b = 0.0;
     }
 }
 
